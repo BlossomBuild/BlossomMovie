@@ -2,7 +2,7 @@
 //  Errors.swift
 //  BlossomMovie
 //
-//  Created by Carlos Valentin on 1/16/25.
+//  Created by Carlos Valentin on 1/23/25.
 //
 
 import Foundation
@@ -12,15 +12,14 @@ enum APIConfigError: Error, LocalizedError {
     case dataLoadingFailed(underlyingError: Error)
     case decodingFailed(underlyingError: Error)
     
-    
-   var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .fileNotFound:
-            return "APIConfig file not found"
+            return "API configuration file not found."
         case .dataLoadingFailed(underlyingError: let error):
-            return "Data loading failed: \(error.localizedDescription)"
+            return "Failed to load data from API configuration file: \(error.localizedDescription)."
         case .decodingFailed(underlyingError: let error):
-            return "Decoding failed: \(error.localizedDescription)"
+            return "Failed to decode API configuration: \(error.localizedDescription)."
         }
     }
 }

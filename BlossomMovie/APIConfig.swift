@@ -12,16 +12,15 @@ struct APIConfig: Decodable {
     let tmdbAPIKey: String
     
     static let shared: APIConfig? = {
-        
         do {
-            return try load()
+            return try loadConfig()
         } catch {
-            print("Error initializing APIConfig: \(error.localizedDescription)")
+            print("Failed to load API config: \(error.localizedDescription)")
             return nil
         }
     }()
     
-    private static func load() throws -> APIConfig {
+    private static func loadConfig() throws -> APIConfig {
         guard let url = Bundle.main.url(forResource: "APIConfig", withExtension: "json") else {
             throw APIConfigError.fileNotFound
         }
