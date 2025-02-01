@@ -37,3 +37,4 @@ enum NetworkError: Error, LocalizedError {
         }
     }
 }
+
