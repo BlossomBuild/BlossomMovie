@@ -15,11 +15,7 @@ struct APIConfig: Decodable {
         do {
             return try loadConfig()
         } catch {
-
-            print("Failed to load API config    Error: \(error.localizedDescription)")
-
             print("Failed to load API config: \(error.localizedDescription)")
-
             return nil
         }
     }()
