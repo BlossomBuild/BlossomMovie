@@ -57,20 +57,29 @@ struct HomeView: View {
                                 }
                             }
                             
-                            HorizontalListView(header: Constants.trendingMovieString, titles: viewModel.trendingMovies)
-                            HorizontalListView(header: Constants.trendingTVString, titles: viewModel.trendingTV)
-                            HorizontalListView(header: Constants.topRatedMovieString, titles: viewModel.topRatedMovies)
-                            HorizontalListView(header: Constants.topRatedTVString, titles: viewModel.topRatedTV)
+                            HorizontalListView(header: Constants.trendingMovieString, titles: viewModel.trendingMovies) { title in
+                                titleDetailPath.append(title)
+                            }
+                            HorizontalListView(header: Constants.trendingTVString, titles: viewModel.trendingTV) { title in
+                                titleDetailPath.append(title)
+                            }
+                            HorizontalListView(header: Constants.topRatedMovieString, titles: viewModel.topRatedMovies) { title in
+                                titleDetailPath.append(title)
+                            }
+                            HorizontalListView(header: Constants.topRatedTVString, titles: viewModel.topRatedTV) { title in
+                                titleDetailPath.append(title)
+                            }
                         }
-                        .navigationDestination(for: Title.self) { title in
-                            TitleDetailView(title: title)
-                        }
+                       
                     case .failed(let error):
                         Text("Error: \(error)")
                     }
                 }
                 .task {
                     await viewModel.getTitles()
+                }
+                .navigationDestination(for: Title.self) { title in
+                    TitleDetailView(title: title)
                 }
             }
         }
