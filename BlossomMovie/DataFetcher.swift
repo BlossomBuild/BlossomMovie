@@ -10,6 +10,8 @@ import Foundation
 struct DataFetcher {
     let tmdbBaseURL = APIConfig.shared?.tmdbBaseURL
     let tmdbAPIKey = APIConfig.shared?.tmdbAPIKey
+    let youtubeSearchURL = APIConfig.shared?.youtubeSearchURL
+    let youtubeAPIKey = APIConfig.shared?.youtubeAPIKey
     
     //https://api.themoviedb.org/3/trending/movie/day?api_key=YOUR_API_KEY
     //https://api.themoviedb.org/3/movie/top_rated?api_key=YOUR_API_KEY
@@ -65,5 +67,27 @@ struct DataFetcher {
         }
         
         return url
+    }
+    
+    //https://www.googleapis.com/youtube/v3/search?q=Breaking%20Bad%20trailer&key=APIKEY
+    func fetchVideoId(for title: String) async throws -> String {
+        guard let baseSearchURL = youtubeSearchURL else {
+            throw NetworkError.missingConfig
+        }
+        
+        guard let searchAPIKey = youtubeAPIKey else {
+            throw NetworkError.missingConfig
+        }
+        
+        let trailerSearch = title + YoutubeURLStrings.space.rawValue + YoutubeURLStrings.trailer.rawValue
+        
+        guard let fetchVideoURL = URL(string: baseSearchURL)?.appending(queryItems: [
+            URLQueryItem(name: YoutubeURLStrings.queryShorten.rawValue, value: trailerSearch),
+            URLQueryItem(name: YoutubeURLStrings.key.rawValue, value: searchAPIKey)
+        ]) else {
+            throw NetworkError.urlBuildFailed
+        }
+        
+        print(fetchVideoURL)
     }
 }
