@@ -23,8 +23,40 @@ struct DataFetcher {
         }
         
         print(fetchTitlesURL)
+        var titles = try await fetchAndDecode(url: fetchTitlesURL, type: TMDBAPIObject.self).results
+       
+        Constants.addPosterPath(to: &titles)
+        return titles
+    }
+    
+    
+    
+    //https://www.googleapis.com/youtube/v3/search?q=Breaking%20Bad%20trailer&key=APIKEY
+    func fetchVideoId(for title: String) async throws -> String {
+        guard let baseSearchURL = youtubeSearchURL else {
+            throw NetworkError.missingConfig
+        }
         
-        let(data,urlResponse) = try await URLSession.shared.data(from: fetchTitlesURL)
+        guard let searchAPIKey = youtubeAPIKey else {
+            throw NetworkError.missingConfig
+        }
+        
+        let trailerSearch = title + YoutubeURLStrings.space.rawValue + YoutubeURLStrings.trailer.rawValue
+        
+        guard let fetchVideoURL = URL(string: baseSearchURL)?.appending(queryItems: [
+            URLQueryItem(name: YoutubeURLStrings.queryShorten.rawValue, value: trailerSearch),
+            URLQueryItem(name: YoutubeURLStrings.key.rawValue, value: searchAPIKey)
+        ]) else {
+            throw NetworkError.urlBuildFailed
+        }
+        
+        print(fetchVideoURL)
+        
+        return try await fetchAndDecode(url: fetchVideoURL, type: YoutubeSearchResponse.self).items?.first?.id?.videoId ?? ""
+    }
+    
+    func fetchAndDecode<T: Decodable>(url: URL, type: T.Type) async throws -> T {
+        let(data,urlResponse) = try await URLSession.shared.data(from: url)
         
         guard let response = urlResponse as? HTTPURLResponse, response.statusCode == 200 else {
             throw NetworkError.badURLResponse(underlyingError: NSError(
@@ -35,9 +67,7 @@ struct DataFetcher {
         
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        var titles = try decoder.decode(APIObject.self, from: data).results
-        Constants.addPosterPath(to: &titles)
-        return titles
+        return try decoder.decode(type, from: data)
     }
     
     private func buildURL(media:String,type:String) throws -> URL? {
@@ -67,27 +97,5 @@ struct DataFetcher {
         }
         
         return url
-    }
-    
-    //https://www.googleapis.com/youtube/v3/search?q=Breaking%20Bad%20trailer&key=APIKEY
-    func fetchVideoId(for title: String) async throws -> String {
-        guard let baseSearchURL = youtubeSearchURL else {
-            throw NetworkError.missingConfig
-        }
-        
-        guard let searchAPIKey = youtubeAPIKey else {
-            throw NetworkError.missingConfig
-        }
-        
-        let trailerSearch = title + YoutubeURLStrings.space.rawValue + YoutubeURLStrings.trailer.rawValue
-        
-        guard let fetchVideoURL = URL(string: baseSearchURL)?.appending(queryItems: [
-            URLQueryItem(name: YoutubeURLStrings.queryShorten.rawValue, value: trailerSearch),
-            URLQueryItem(name: YoutubeURLStrings.key.rawValue, value: searchAPIKey)
-        ]) else {
-            throw NetworkError.urlBuildFailed
-        }
-        
-        print(fetchVideoURL)
     }
 }
