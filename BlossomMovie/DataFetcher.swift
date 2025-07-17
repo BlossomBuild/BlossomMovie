@@ -19,8 +19,8 @@ struct DataFetcher {
     //https://api.themoviedb.org/3/search/movie?api_key=YourKey&query=PulpFiction
 
 
-    func fetchTitles(for media:String, by type:String) async throws -> [Title] {
-        let fetchTitlesURL = try buildURL(media: media, type: type)
+    func fetchTitles(for media:String, by type:String, with title:String? = nil) async throws -> [Title] {
+        let fetchTitlesURL = try buildURL(media: media, type: type, searchPhrase: title)
        
         guard let fetchTitlesURL = fetchTitlesURL else {
             throw NetworkError.urlBuildFailed
