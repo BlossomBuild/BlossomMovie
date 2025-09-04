@@ -13,7 +13,7 @@ struct TMDBAPIObject: Decodable {
 
 @Model
 class Title: Decodable, Identifiable, Hashable {
-    var id: Int?
+    @Attribute(.unique) var id: Int?
     var title: String?
     var name: String?
     var overview: String?
