@@ -23,6 +23,8 @@ struct UpcomingView: View {
                     VerticalListView(titles: viewModel.upcomingMovies, canDelete: false)
                 case .failed(let underlyingError):
                     Text(underlyingError.localizedDescription)
+                        .errorMessage()
+                        .frame(width: geo.size.width, height: geo.size.height)
                 }
             }
             .task {

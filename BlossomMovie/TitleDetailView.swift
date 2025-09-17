@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TitleDetailView: View {
+    @Environment(\.dismiss) var dismiss
     let title: Title
     var titleName: String {
         return (title.name ?? title.title) ?? ""
@@ -46,6 +47,7 @@ struct TitleDetailView: View {
                                saveTitle.title = titleName
                                modelContext.insert(saveTitle)
                                try? modelContext.save()
+                               dismiss()
                            } label: {
                                Text(Constants.downloadString)
                                    .ghostButton()
@@ -58,6 +60,8 @@ struct TitleDetailView: View {
                }
            case .failed(let underlyingError):
                Text(underlyingError.localizedDescription)
+                   .errorMessage()
+                   .frame(width: geometry.size.width, height: geometry.size.height)
            }
         }
        .task {
